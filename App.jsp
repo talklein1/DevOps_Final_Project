@@ -1,75 +1,139 @@
-<html>
+<%@ page import = "java.util.*" %><?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html 
+    PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en"> 
 <head>
-  <title>Book Query</title>
+    <meta http-equiv="Content-Type" content='text/html; charset=UTF-8'/>
+    <meta http-equiv="Content-Style-Type" content="text/css"/>
+    <link rel="stylesheet" media="screen" type="text/css" title="Preferred" href="number-guess.css"/>
+    <title>JSP Number Guess</title>
 </head>
 <body>
-  <h1>Another E-Bookstore</h1>
-  <h3>Choose Author(s):</h3>
-  <form method="get">
-    <input type="checkbox" name="author" value="Tan Ah Teck">Tan
-    <input type="checkbox" name="author" value="Mohd Ali">Ali
-    <input type="checkbox" name="author" value="Kumar">Kumar
-    <input type="submit" value="Query">
-  </form>
- 
-  <%
-    String[] authors = request.getParameterValues("author");
-    if (authors != null) {
-  %>
-  <%@ page import = "java.sql.*" %>
-  <%
-      Connection conn = DriverManager.getConnection(
-          "jdbc:mysql://localhost:8888/ebookshop", "myuser", "xxxx"); // <== Check!
-      // Connection conn =
-      //    DriverManager.getConnection("jdbc:odbc:eshopODBC");  // Access
-      Statement stmt = conn.createStatement();
- 
-      String sqlStr = "SELECT * FROM books WHERE author IN (";
-      sqlStr += "'" + authors[0] + "'";  // First author
-      for (int i = 1; i < authors.length; ++i) {
-         sqlStr += ", '" + authors[i] + "'";  // Subsequent authors need a leading commas
-      }
-      sqlStr += ") AND qty > 0 ORDER BY author ASC, title ASC";
- 
-      // for debugging
-      System.out.println("Query statement is " + sqlStr);
-      ResultSet rset = stmt.executeQuery(sqlStr);
-  %>
-      <hr>
-      <form method="get" action="order.jsp">
-        <table border=1 cellpadding=5>
-          <tr>
-            <th>Order</th>
-            <th>Author</th>
-            <th>Title</th>
-            <th>Price</th>
-            <th>Qty</th>
-          </tr>
-  <%
-      while (rset.next()) {
-        int id = rset.getInt("id");
-  %>
-          <tr>
-            <td><input type="checkbox" name="id" value="<%= id %>"></td>
-            <td><%= rset.getString("author") %></td>
-            <td><%= rset.getString("title") %></td>
-            <td>$<%= rset.getInt("price") %></td>
-            <td><%= rset.getInt("qty") %></td>
-          </tr>
-  <%
-      }
-  %>
-        </table>
-        <br>
-        <input type="submit" value="Order">
-        <input type="reset" value="Clear">
-      </form>
-      <a href="<%= request.getRequestURI() %>"><h3>Back</h3></a>
-  <%
-      rset.close();
-      stmt.close();
-      conn.close();
+
+    <h1>JSP Number Guess</h1>
+
+    <div class='content'>
+<%
+//  Initialize.
+
+    final HttpSession       Sess = request.getSession();
+    final boolean           JustStarted = Sess.isNew();
+    final Integer           No;
+    final ArrayList         Hist;
+
+    if (JustStarted) {
+
+        No = new Integer(new java.util.Random().nextInt(101));
+        Hist = new ArrayList();
+
+        Sess.setAttribute("no", No);
+        Sess.setAttribute("hist", Hist);
+
+    } else {
+
+        No = (Integer) Sess.getAttribute("no");
+        Hist = (ArrayList) Sess.getAttribute("hist");
     }
-  %>
+
+//  Process the input.
+
+    final String            GuessStr = request.getParameter("guess");
+    String                  GuessErrorMsg = null;
+    int                     Guess = -1;
+
+    if (!JustStarted) {
+
+        if (GuessStr != null && GuessStr.length() != 0) {
+
+            try {
+
+                Guess = Integer.parseInt(GuessStr);
+                if (Guess < 0 || Guess > 100)
+                    GuessErrorMsg = "The guess must be in the range 0 to 100 (inclusive). " + 
+                        "The number \"" + Guess + "\" is not in that range.";
+                else
+                    Hist.add(new Integer(Guess));
+
+            } catch (NumberFormatException e) {
+                GuessErrorMsg = "The guess \"" + GuessStr + "\" is not a number.";
+            }
+
+        } else
+            GuessErrorMsg = "The guess should be a number, but is blank.";
+    }
+
+//  Produce the dynamic portions of the web page.
+
+    if (Guess != No.intValue()) {
+%>
+        <div class='guess'>
+            <p>A random number between 0 and 100 (inclusive) has been selected.</p>
+<%
+        if (GuessErrorMsg != null) {
+%>
+            <div class='bad-field-error-message'><%= GuessErrorMsg %></div>
+<%
+        }
+%>
+            <form method='post'>
+                <label <%= GuessErrorMsg != null ? "class='bad-field'" : "" %> >Guess the number: 
+                    <input type='text' size='6' name='guess' 
+                    <%= GuessErrorMsg != null ? "value='" + GuessStr + "'" : "" %> />
+                </label>
+                <input type='submit' value='Guess'/>
+            </form>
+        </div>
+<%
+    } else {
+
+        Sess.invalidate();  //  Destroy this session. We're done.
+%>
+        <div class='done'>
+            <p>Correct! The number was <%= No %>. 
+            You guessed it in <%= Hist.size() %> attempts.</p>
+
+            <form method='post'>
+                <input type='submit' value='Play Again'/>
+            </form>
+        </div>
+<%
+    }
+
+    if (Hist.size() > 0) {
+%>
+        <div class='history'>
+            <table class='history'>
+                <thead>
+                    <tr>
+                        <th>No.</th> <th>Guess</th> <th>Result</th>
+                    </tr>
+                </thead>
+                <tbody>
+<%
+        for (int Index = Hist.size() - 1; Index >= 0; Index--) {
+            final Integer           PrevGuess = (Integer) Hist.get(Index);
+            final int               Relationship = PrevGuess.compareTo(No);
+            String                  Result = "Correct!";
+
+            if (Relationship < 0)
+                Result = "Too Low";
+            else if (Relationship > 0)
+                Result = "Too High";
+%>
+                    <tr>
+                        <td><%= Index + 1 %></td> <td><%= PrevGuess %></td> <td class='result'><%= Result %></td>
+                    </tr>
+<%
+        }
+%>
+                </tbody>
+            </table>
+        </div>
+<%
+    }
+%>
+    </div>
+
 </body>
 </html>
