@@ -1,7 +1,7 @@
 <html>
 <head><title>First JSP</title></head>
 <body>
-  <h2>DE Application</h2>
+  <h2>Tal Klein!!!!!</h2>
   <%
     double num = Math.random();
     if (num > 0.95) {
