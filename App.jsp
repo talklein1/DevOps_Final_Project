@@ -16,7 +16,7 @@
 
     <link rel="stylesheet" media="screen" type="text/css" title="Preferred" href="number-guess.css"/>
 
-    <title>JSP Number Guess</title>
+    <title>JSP Guess</title>
 
 </head>
 
