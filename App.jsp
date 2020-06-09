@@ -20,15 +20,11 @@
 
 </head>
 
-<body>
+<body style="width: 1255px; "><h1 align="center" style="font-family:calibri;"> Number Guess</h1>
 
 
 
-    <h1>JSP Number Guess</h1>
-
-
-
-    <div class='content'>
+    <div class='content' align="center">
 
 <%
 
@@ -136,9 +132,9 @@
 
 %>
 
-        <div class='guess'>
+        <div class='guess' align="center">
 
-            <p>A random number between 0 and 100 (inclusive) has been selected?!?!?!?!?!?!?</p>
+            <p align="center" style="font-family:calibri;">A random number between 0 - 100 (inclusive) has been selected</p>
 
 <%
 
@@ -146,7 +142,7 @@
 
 %>
 
-            <div class='bad-field-error-message'><%= GuessErrorMsg %></div>
+            <div class='bad-field-error-message' align="center" style="font-family:calibri;"><%= GuessErrorMsg %></div>
 
 <%
 
@@ -154,17 +150,17 @@
 
 %>
 
-            <form method='post'>
+            <form method='post' style="height: 59px; width: 309px; font-family:calibri;">
 
-                <label <%= GuessErrorMsg != null ? "class='bad-field'" : "" %> >Guess the number: 
+                <label <%= GuessErrorMsg != null ? "class='bad-field'" : "" %>>Guess the number: 
 
                     <input type='text' size='6' name='guess' 
 
-                    <%= GuessErrorMsg != null ? "value='" + GuessStr + "'" : "" %> />
+                    <%= GuessErrorMsg != null ? "value='" + GuessStr + "'" : "" %>/>
 
                 </label>
 
-                <input type='submit' value='Guess'/>
+                <input type='submit' value='Guess' align="top"/>
 
             </form>
 
@@ -180,9 +176,9 @@
 
 %>
 
-        <div class='done'>
+        <div class='done' align="center">
 
-            <p>Correct! The number was <%= No %>. 
+            <p style="font-family:calibri;">Correct! The number was <%= No %>. 
 
             You guessed it in <%= Hist.size() %> attempts.</p>
 
@@ -206,7 +202,7 @@
 
 %>
 
-        <div class='history'>
+        <div class='history' align="center">
 
             <table class='history'>
 
@@ -214,7 +210,7 @@
 
                     <tr>
 
-                        <th>No.</th> <th>Guess</th> <th>Result</th>
+                        <th style="font-family:calibri">No.</th> <th style="font-family:calibri">Guess</th> <th style="font-family:calibri">Result</th>
 
                     </tr>
 
@@ -246,7 +242,7 @@
 
                     <tr>
 
-                        <td><%= Index + 1 %></td> <td><%= PrevGuess %></td> <td class='result'><%= Result %></td>
+                        <td style="font-family:calibri;"><%= Index + 1 %></td> <td style="font-family:calibri;"><%= PrevGuess %></td> <td class='result' style="font-family:calibri;"><%= Result %></td>
 
                     </tr>
 
