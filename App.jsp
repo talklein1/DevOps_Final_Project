@@ -20,7 +20,7 @@
 
 </head>
 
-<body style="width: 1255px; "><h1 align="center" style="font-family:calibri;"> Number Guess</h1>
+<body style="width: 1255px; "><h1 align="center" style="font-family:calibri;"> Tal Klein</h1>
 
 
 
